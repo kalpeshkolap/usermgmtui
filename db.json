@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "id": 3,
+      "name": "Rashi",
+      "email": "rashi@test.com",
+      "contact": 7458529634
+    },
+    {
+      "id": 5,
+      "name": "Rahul",
+      "email": "rahul12334@gmail.com",
+      "contact": 7218529634
+    },
+    {
+      "id": 6,
+      "name": "Sunny",
+      "email": "sunny7458@gmail.com",
+      "contact": 7458529634
+    },
+    {
+      "id": 7,
+      "name": "Nisha",
+      "email": "nisha7485966@gmail.com",
+      "contact": 7418529634
+    },
+    {
+      "id": 8,
+      "name": "Rashi",
+      "email": "rashi@test.com",
+      "contact": "7894564564"
+    },
+    {
+      "id": 8,
+      "name": "Rashi",
+      "email": "rashi@test.com",
+      "contact": "7894564564"
+    }
+  ]
+}
