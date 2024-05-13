@@ -6,16 +6,21 @@ import { toast } from "react-toastify";
 import UserEntry from "./UserEntry";
 
 function Users() {
-  const responseInfo = useGetUserQuery();
-  console.log(responseInfo);
+  const {data, error , isLoading} = useGetUserQuery();
+  console.log(data);
+  const [user,setUser]=useState(data);
   const [showModal, setShowModal] = useState(false);
   const [userid, setUserId] = useState("");
   const [deletefunc] = useDeleteUserMutation();
   useEffect(() => {
-    if (responseInfo.isError) {
+    if (error) {
       toast.error("Something Went Wrong!!!");
     }
-  }, [responseInfo.isError]);
+    
+    if(data){
+      setUser(data)
+    }
+  }, [error,data]);
 
   const openmodal = () => {
     setShowModal(true);
@@ -23,7 +28,7 @@ function Users() {
   const closemodal = () => {
     setShowModal(false);
   };
-  if (responseInfo.isLoading) {
+  if (isLoading) {
     // Handle loading state
     return <h1>Loading...</h1>;
   }
@@ -71,7 +76,7 @@ function Users() {
         </Col>
         <Col xs={2}>
           <div className="d-flex justify-content-end">
-            <Button variant="primary" onClick={openmodal}>
+            <Button variant="primary"  onClick={() => (setUserId(""), openmodal())}>
               <FaPlus />
               Add User
             </Button>
@@ -91,9 +96,9 @@ function Users() {
               <th>Delete</th>
             </tr>
           </thead>
-          {/* <tbody className="text-center">
-            {responseInfo.data &&
-              Object.values(responseInfo.data).map((items) => {
+          <tbody className="text-center">
+            {user &&
+              user.map((items) => {
                 return (
                   <tr key={items.id}>
                     <th>{items.id}</th>
@@ -119,32 +124,7 @@ function Users() {
                   </tr>
                 );
               })}
-          </tbody> */}
-          <tbody className="text-center">
-          <tr>
-          <th>1</th>
-                    <th>Anushka</th>
-                    <th>anu@gmail.com</th>
-                    <th>234567898</th>
-                    <th>
-                      <Button
-                        variant="warning"
-                        // onClick={() => (setUserId(items.id), openmodal())}
-                      >
-                        <FaEdit />
-                      </Button>
-                    </th>
-                    <th>
-                      <Button
-                        variant="danger"
-                        // onClick={() => handleDelete(items.id)}
-                      >
-                        <FaTrash />
-                      </Button>
-                    </th>
-
-          </tr>
-          </tbody>
+          </tbody> 
         </Table>
       </div>
     </div>
