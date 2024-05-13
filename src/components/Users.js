@@ -6,21 +6,26 @@ import { toast } from "react-toastify";
 import UserEntry from "./UserEntry";
 
 function Users() {
-  const {data, error , isLoading} = useGetUserQuery();
-  console.log(data);
-  const [user,setUser]=useState(data);
-  const [showModal, setShowModal] = useState(false);
-  const [userid, setUserId] = useState("");
-  const [deletefunc] = useDeleteUserMutation();
+  const [user, setUser] = useState([]);
+  const { data, error, isLoading } = useGetUserQuery(
+    
+  );
+
   useEffect(() => {
     if (error) {
       toast.error("Something Went Wrong!!!");
     }
-    
-    if(data){
-      setUser(data)
+
+    if (data) {
+      setUser(data);
     }
-  }, [error,data]);
+  }, [error, data]);
+
+ 
+
+  const [showModal, setShowModal] = useState(false);
+  const [userid, setUserId] = useState("");
+  const [deletefunc] = useDeleteUserMutation();
 
   const openmodal = () => {
     setShowModal(true);
@@ -29,7 +34,6 @@ function Users() {
     setShowModal(false);
   };
   if (isLoading) {
-    // Handle loading state
     return <h1>Loading...</h1>;
   }
 
@@ -38,6 +42,7 @@ function Users() {
       return <UserEntry show={showModal} onClose={closemodal} id={userid} />;
     }
   };
+
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       deletefunc(id)
@@ -49,34 +54,21 @@ function Users() {
         });
     }
   };
+
   return (
     <div className="container-fluid">
       <div className="p-3 bg-primary text-white text-center">
         <h1>User Details Management System</h1>
-        <p>
-          The User Details Management System is a powerful and user-friendly
-          application designed to help you efficiently manage user data. Whether
-          you are a business owner, a project manager, or an individual looking
-          to organize personal information, this system provides a convenient
-          platform for storing, creating, editing, and deleting user details.
-        </p>
+        <p>The User Details Management System</p>
       </div>
       <Row className="custom-padding center-items">
         <Col xs={8}>
           <h1>Users Details</h1>
         </Col>
-        <Col xs={2}>
-          <div className="input-group">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search..."
-            />
-          </div>
-        </Col>
+       
         <Col xs={2}>
           <div className="d-flex justify-content-end">
-            <Button variant="primary"  onClick={() => (setUserId(""), openmodal())}>
+            <Button variant="primary" onClick={() => (setUserId(""), openmodal())}>
               <FaPlus />
               Add User
             </Button>
@@ -101,30 +93,30 @@ function Users() {
               user.map((items) => {
                 return (
                   <tr key={items.id}>
-                    <th>{items.id}</th>
-                    <th>{items.name}</th>
-                    <th>{items.email}</th>
-                    <th>{items.contact}</th>
-                    <th>
+                    <td>{items.id}</td>
+                    <td>{items.name}</td>
+                    <td>{items.email}</td>
+                    <td>{items.contact}</td>
+                    <td>
                       <Button
                         variant="warning"
                         onClick={() => (setUserId(items.id), openmodal())}
                       >
                         <FaEdit />
                       </Button>
-                    </th>
-                    <th>
+                    </td>
+                    <td>
                       <Button
                         variant="danger"
                         onClick={() => handleDelete(items.id)}
                       >
                         <FaTrash />
                       </Button>
-                    </th>
+                    </td>
                   </tr>
                 );
               })}
-          </tbody> 
+          </tbody>
         </Table>
       </div>
     </div>
@@ -132,3 +124,4 @@ function Users() {
 }
 
 export default Users;
+

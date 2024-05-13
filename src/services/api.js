@@ -9,14 +9,13 @@ export const api = createApi({
   endpoints: (builder) => ({
     getUser: builder.query({
       query: () => ({
-        url: "app/",
-       
+        url: `app/`,
       }),
       providesTags: ["User"],
     }),
     getUserById: builder.query({
       query: (id) => ({
-        url: `users/${id}`,
+        url: `app/${id}`,
         method: "GET",
        
       }),
@@ -32,7 +31,7 @@ export const api = createApi({
     }),
     updateUser: builder.mutation({
       query: (updateUser) => ({
-        url: `users/${updateUser.id}`,
+        url: `app/${updateUser.id}`,
         method: "PUT",
         body: updateUser,
       }),
@@ -40,7 +39,7 @@ export const api = createApi({
     }),
     deleteUser: builder.mutation({
       query: (id) => ({
-        url: `users/${id}`,
+        url: `app/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["User"],
