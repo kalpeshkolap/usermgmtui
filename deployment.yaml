@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  usermgmtui
+  namespace: userapp
+  labels:
+    app:  usermgmtui
+spec:
+  selector:
+    matchLabels:
+      app: usermgmtui
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  usermgmtui
+    spec:
+      containers:
+      - name:  usermgmtui
+        image:  kk2104/usermgmtui:v1
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort:  3000
+      restartPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: usermgmtui
+  namespace: default
+spec:
+  selector:
+    app: usermgmtui
+  type: ClusterIP
+  ports:
+  - name: usermgmtui
+    protocol: TCP
+    port: 3000
+    targetPort: 3000
