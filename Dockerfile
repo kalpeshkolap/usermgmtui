@@ -1,19 +1,12 @@
-FROM node:18-alpine3.15 as build
-
+FROM node:22-alpine3.18 
 # set Working directory
 WORKDIR /app
-
-# install application dependencies
-RUN npm install -g serve
-COPY package.json .
-COPY package-lock.json .
-
+#copy code
+COPY . .
 RUN npm install
+CMD ["npm", "start"]
 
 # Copy code
-COPY . .
 # RUN npm run build:dev
-
 # Run application.
 # CMD ["serve", "-s", "build"]
-CMD ["npm", "start"]
