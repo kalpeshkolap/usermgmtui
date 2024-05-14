@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://kubernetes.docker.internal:8000/user/",
+  baseUrl: "http://usermgmtback.userapp:8000/user/",
     // baseUrl: process.env.BACKEND_URL ,
   }),
   tagTypes: ["User"],
