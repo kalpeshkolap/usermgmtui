@@ -22,14 +22,7 @@ spec:
     spec:
       containers:
       - name:  usermgmtui
-        image:  kk2104/usermgmtui:v1
-        resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
-          limits:
-            cpu: 100m
-            memory: 100Mi
+        image:  kk2104/usermgmtui:v5
         ports:
         - containerPort:  3000
       restartPolicy: Always
