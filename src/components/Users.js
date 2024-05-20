@@ -34,7 +34,11 @@ function Users() {
     setShowModal(false);
   };
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <Spinner animation="border" />
+      </div>
+    );
   }
 
   const UserModal = () => {
