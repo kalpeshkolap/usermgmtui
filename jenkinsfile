@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('checkout code ') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/kalpeshkolap/usermgmtui.git']]])
+            }
+        }
+        stage('build package') {
+            steps {
+                script {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+        stage('docker build') {
+            steps {
+                script {
+                    sh 'docker build -t kk2104/usermgmtui:v0.0.$BUILD_ID . --no-cache'
+                }
+            }
+        }
+        stage('pushing image to registry') {
+            steps {
+                script {
+                    sh ''' docker push kk2104/usermgmtui:v0.0.$BUILD_ID 
+                           docker rmi  kk2104/usermgmtui:v0.0.$BUILD_ID '''
+                }
+            }
+        }
+        stage('deploy app') {
+            steps {
+                script {
+                    sh ''' 
+                    kubectl config use-context DEV
+                    kubectl apply -f deployment.yml
+                    kubectl set image deployment/usermgmtui usermgmtui=kk2104/usermgmtui:v0.0.$BUILD_ID  -n userapp --record=true'''
+                    
+                }
+            }
+        }
+        stage('clean workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+    }
+}
