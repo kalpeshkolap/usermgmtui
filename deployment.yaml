@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       - name:  usermgmtui
-        image:  kk2104/usermgmtui:v7
+        image:  kk2104/usermgmtui:v0.0.1
         ports:
         - containerPort:  3000
       restartPolicy: Always
