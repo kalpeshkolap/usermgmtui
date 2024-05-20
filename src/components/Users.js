@@ -58,7 +58,7 @@ function Users() {
   return (
     <div className="container-fluid">
       <div className="p-3 bg-info text-white text-center">
-        <h1>User Details Management System</h1>
+        <h1>User Management System</h1>
         <p>The User Details Management System</p>
       </div>
       <Row className="custom-padding center-items">
