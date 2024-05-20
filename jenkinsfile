@@ -30,7 +30,7 @@ pipeline {
                 script {
                     sh ''' 
                     kubectl config use-context DEV
-                    kubectl apply -f deployment.yml
+                    kubectl apply -f deployment.yaml
                     kubectl set image deployment/usermgmtui usermgmtui=kk2104/usermgmtui:v0.0.$BUILD_ID  -n userapp --record=true'''
                     
                 }
