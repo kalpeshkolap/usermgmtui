@@ -10,7 +10,7 @@ pipeline {
         stage('docker build') {
             steps {
                 script {
-                    sh 'docker build -t kk2104/usermgmtui:v0.0.$BUILD_ID . --no-cache'
+                    sh 'docker  build -t kk2104/usermgmtui:v0.0.$BUILD_ID . --no-cache'
                 }
             }
         }
