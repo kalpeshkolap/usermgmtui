@@ -3,7 +3,7 @@ FROM node:22-alpine3.18
 WORKDIR /app
 #copy code
 COPY . .
-RUN npm install
+RUN npm install -f
 CMD ["npm", "start"]
 
 # Copy code
