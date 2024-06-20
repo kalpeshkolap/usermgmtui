@@ -1,5 +1,5 @@
 # Stage 1: Build the React application
-FROM node:22-alpine3.18 AS build
+FROM node:22.3.0-alpine3.20 AS build
 
 # Set working directory
 WORKDIR /app
@@ -14,6 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the application
+# to build with different environments use npm run build:envname
 RUN npm run build
 
 # Stage 2: Serve the built application using Nginx
