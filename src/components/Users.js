@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Col, Row, Table } from "react-bootstrap";
+import { Button, Col, Row, Table,Spinner } from "react-bootstrap";
 import { useDeleteUserMutation, useGetUserQuery } from "../services/api";
 import { FaEdit, FaTrash, FaPlus } from "react-icons/fa";
 import { toast } from "react-toastify";
@@ -34,7 +34,11 @@ function Users() {
     setShowModal(false);
   };
   if (isLoading) {
-    return <h1>Loading...</h1>;
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <Spinner animation="border" />
+      </div>
+    );
   }
 
   const UserModal = () => {
@@ -58,7 +62,7 @@ function Users() {
   return (
     <div className="container-fluid">
       <div className="p-3 bg-primary text-white text-center">
-        <h1>User Details Management System</h1>
+        <h1>User Management System</h1>
         <p>The User Details Management System</p>
       </div>
       <Row className="custom-padding center-items">
