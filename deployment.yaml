@@ -22,9 +22,9 @@ spec:
     spec:
       containers:
       - name:  usermgmtui
-        image:  kk2104/usermgmtui:v0.0.2
+        image:  kk2104/usermgmtui:v0.0.3
         ports:
-        - containerPort:  3000
+        - containerPort:  80
       restartPolicy: Always
 
 ---
@@ -41,5 +41,5 @@ spec:
   ports:
   - name: usermgmtui
     protocol: TCP
-    port: 3000
-    targetPort: 3000
+    port: 80
+    targetPort: 80
