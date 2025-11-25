@@ -25,6 +25,7 @@ pipeline {
             steps {
                 script {
                     sh ''' docker push kk2104/usermgmtui:v0.0.$BUILD_ID 
+                            echo "deleting image"
                            docker rmi  kk2104/usermgmtui:v0.0.$BUILD_ID '''
                 }
             }
