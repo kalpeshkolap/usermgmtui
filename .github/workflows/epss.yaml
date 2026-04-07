@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  trivy-scan:
+  security-scan:
     runs-on: ubuntu-latest
 
     steps:
@@ -14,23 +14,23 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Run Trivy scan (JSON output with EPSS)
+      # 2️⃣ Run Trivy scan (JSON with EPSS)
       - name: Run Trivy Scan
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.24.0
         with:
           scan-type: fs
           format: json
           output: trivy.json
           ignore-unfixed: true
 
-      # 3️⃣ Install jq (for filtering)
+      # 3️⃣ Install jq
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      # 4️⃣ Filter vulnerabilities using EPSS
+      # 4️⃣ EPSS Filtering (FAIL build if exploitable)
       - name: EPSS Risk Filtering
         run: |
-          echo "🔍 Checking for exploitable vulnerabilities..."
+          echo "🔍 Checking exploitable vulnerabilities..."
 
           COUNT=$(jq '
           [.Results[].Vulnerabilities[]? 
@@ -40,36 +40,16 @@ jobs:
           )] | length
           ' trivy.json)
 
-          echo "High-risk vulnerabilities found: $COUNT"
+          echo "High-risk vulnerabilities: $COUNT"
 
           if [ "$COUNT" -gt 0 ]; then
-            echo "❌ Build failed due to exploitable vulnerabilities!"
+            echo "❌ Build failed: exploitable vulnerabilities found!"
             exit 1
           else
-            echo "✅ No high-risk vulnerabilities found"
+            echo "✅ No high-risk vulnerabilities"
           fi
 
-      # 5️⃣ Generate filtered JSON (only high EPSS)
-      - name: Create filtered report
-        run: |
-          jq '
-          {
-            Results: [
-              .Results[] | {
-                Target: .Target,
-                Vulnerabilities: [
-                  .Vulnerabilities[]? 
-                  | select(
-                      (.Severity == "HIGH" or .Severity == "CRITICAL")
-                      and (.EPSS.Score > 0.1)
-                  )
-                ]
-              }
-            ]
-          }
-          ' trivy.json > filtered.json
-
-      # 6️⃣ Generate HTML report
+      # 5️⃣ Generate HTML report (USE ORIGINAL JSON ✅)
       - name: Generate HTML report
         run: |
           docker run --rm \
@@ -79,11 +59,11 @@ jobs:
             --format template \
             --template "@/contrib/html.tpl" \
             --output /data/report.html \
-            /data/filtered.json
+            /data/trivy.json
 
-      # 7️⃣ Upload HTML report as artifact
-      - name: Upload Report
+      # 6️⃣ Upload report
+      - name: Upload HTML Report
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-epss-report
+          name: trivy-security-report
           path: report.html
