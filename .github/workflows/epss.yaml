@@ -17,7 +17,7 @@ jobs:
       # 2️⃣ Build Docker image
       - name: Build Docker Image
         run: |
-          docker build -f dev.Dockerfile -t my-app:latest .
+          docker build -f dev.dockerfile -t my-app:latest .
 
       # 3️⃣ Run Trivy scan on image
       - name: Run Trivy Scan (Image)
