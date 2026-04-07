@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Checkout code
+      # 1️⃣ Checkout
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Run Trivy scan (JSON with EPSS)
+      # 2️⃣ Trivy scan
       - name: Run Trivy Scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.19.0
         with:
           scan-type: fs
           format: json
@@ -27,11 +27,9 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      # 4️⃣ EPSS Filtering (FAIL build if exploitable)
+      # 4️⃣ EPSS Filtering
       - name: EPSS Risk Filtering
         run: |
-          echo "🔍 Checking exploitable vulnerabilities..."
-
           COUNT=$(jq '
           [.Results[].Vulnerabilities[]? 
           | select(
@@ -43,13 +41,13 @@ jobs:
           echo "High-risk vulnerabilities: $COUNT"
 
           if [ "$COUNT" -gt 0 ]; then
-            echo "❌ Build failed: exploitable vulnerabilities found!"
+            echo "❌ Build failed!"
             exit 1
           else
             echo "✅ No high-risk vulnerabilities"
           fi
 
-      # 5️⃣ Generate HTML report (USE ORIGINAL JSON ✅)
+      # 5️⃣ HTML Report
       - name: Generate HTML report
         run: |
           docker run --rm \
@@ -65,5 +63,5 @@ jobs:
       - name: Upload HTML Report
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-security-report
+          name: trivy-report
           path: report.html
