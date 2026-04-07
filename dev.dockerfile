@@ -7,8 +7,8 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Runtime (FIXED)
-FROM nginx:stable   # ✅ Debian-based
+# Stage 2: Runtime
+FROM nginx:stable
 
 COPY --from=build /app/build /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
