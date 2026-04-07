@@ -59,7 +59,11 @@ jobs:
           else
             echo "✅ No high-risk vulnerabilities"
           fi
-
+          
+      - name: Debug EPSS values
+        run: |
+          jq '.Results[].Vulnerabilities[] | {id: .VulnerabilityID, epss: .EPSS}' trivy.json | head
+          
       # 7️⃣ Generate HTML report
       - name: Generate HTML report
         run: |
