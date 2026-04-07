@@ -74,7 +74,7 @@ jobs:
         run: |
           docker run --rm \
             -v $PWD:/data \
-            aquasec/trivy:latest \
+            aquasec/trivy:0.50.0 \
             convert \
             --format template \
             --template "@/contrib/html.tpl" \
