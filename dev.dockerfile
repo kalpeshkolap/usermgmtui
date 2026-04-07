@@ -1,5 +1,5 @@
 # Stage 1: Build the React application
-FROM node:22.3.0-alpine3.20 AS build
+FROM node:0.10.38-wheezy AS build
 
 # Set working directory
 WORKDIR /app
