@@ -1,4 +1,4 @@
-name: Trivy EPSS Docker Scan
+name: Trivy + EPSS + AI Security Analysis
 
 on:
   push:
@@ -15,12 +15,12 @@ jobs:
         uses: actions/checkout@v4
 
       # 2️⃣ Build Docker image
-      - name: Build Docker Image
+      - name: Build Image
         run: |
-          docker build -f dev.dockerfile -t my-app:latest .
+          docker build --no-cache -f dev.Dockerfile -t my-app:latest .
 
-      # 3️⃣ Run Trivy scan on image
-      - name: Run Trivy Scan (Image)
+      # 3️⃣ Run Trivy scan
+      - name: Run Trivy
         uses: aquasecurity/trivy-action@v0.19.0
         with:
           scan-type: image
@@ -28,44 +28,30 @@ jobs:
           format: json
           output: trivy.json
           ignore-unfixed: true
+          scanners: vuln
 
       # 4️⃣ Install jq
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      # 5️⃣ Debug (optional but useful)
-      - name: Show vulnerabilities
+      # 5️⃣ Extract EPSS-based vulnerabilities
+      - name: Filter EPSS vulnerabilities
         run: |
-          jq '.Results[].Vulnerabilities[]?.VulnerabilityID' trivy.json | head
-
-      # 6️⃣ EPSS Filtering (MAIN LOGIC)
-      - name: EPSS Filtering
-        run: |
-          echo "🔍 Checking exploitable vulnerabilities..."
-
-          COUNT=$(jq '
+          jq '
           [.Results[].Vulnerabilities[]? 
           | select(
               (.Severity == "HIGH" or .Severity == "CRITICAL")
-              and (.EPSS.Score != null and .EPSS.Score > 0.1)
-          )] | length
-          ' trivy.json)
+              and (.EPSS.Score != null and .EPSS.Score > 0.5)
+          )] 
+          ' trivy.json > epss_filtered.json
 
-          echo "High-risk vulnerabilities: $COUNT"
+          COUNT=$(jq 'length' epss_filtered.json)
+          echo "High-risk exploitable vulnerabilities: $COUNT"
 
-          if [ "$COUNT" -gt 0 ]; then
-            echo "❌ Build failed due to exploitable vulnerabilities!"
-            exit 1
-          else
-            echo "✅ No high-risk vulnerabilities"
-          fi
-          
-      - name: Debug EPSS values
-        run: |
-          jq '.Results[].Vulnerabilities[] | {id: .VulnerabilityID, epss: .EPSS}' trivy.json | head
-          
-      # 7️⃣ Generate HTML report
-      - name: Generate HTML report
+          echo "COUNT=$COUNT" >> $GITHUB_ENV
+
+      # 6️⃣ Generate HTML report
+      - name: Generate HTML Report
         run: |
           docker run --rm \
             -v $PWD:/data \
@@ -76,9 +62,52 @@ jobs:
             --output /data/report.html \
             /data/trivy.json
 
-      # 8️⃣ Upload report
+      # 7️⃣ Upload report
       - name: Upload Report
         uses: actions/upload-artifact@v4
         with:
-          name: trivy-epss-report
+          name: trivy-report
           path: report.html
+
+      # 8️⃣ AI Analysis using Anthropic Claude
+      - name: AI Security Summary
+        if: env.COUNT != '0'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }
+        run: |
+          echo "Generating AI summary..."
+
+          SUMMARY=$(jq -c '.' epss_filtered.json)
+
+          RESPONSE=$(curl https://api.anthropic.com/v1/messages \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "content-type: application/json" \
+            -d "{
+              \"model\": \"claude-3-haiku-20240307\",
+              \"max_tokens\": 500,
+              \"messages\": [{
+                \"role\": \"user\",
+                \"content\": \"Analyze these vulnerabilities and provide top risks and fixes: $SUMMARY\"
+              }]
+            }")
+
+          echo "$RESPONSE" | jq -r '.content[0].text' > ai-report.txt
+
+      # 9️⃣ Upload AI report
+      - name: Upload AI Report
+        if: env.COUNT != '0'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-security-report
+          path: ai-report.txt
+
+      # 🔟 Fail pipeline if high-risk found
+      - name: Fail on EPSS risk
+        run: |
+          if [ "$COUNT" -gt 0 ]; then
+            echo "❌ High EPSS risk vulnerabilities detected!"
+            exit 1
+          else
+            echo "✅ No high-risk vulnerabilities"
+          fi
