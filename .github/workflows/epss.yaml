@@ -17,7 +17,7 @@ jobs:
       # 2️⃣ Build Docker image
       - name: Build Image
         run: |
-          docker build --no-cache -f dev.Dockerfile -t my-app:latest .
+          docker build --no-cache -f dev.dockerfile -t my-app:latest .
 
       # 3️⃣ Run Trivy scan
       - name: Run Trivy
