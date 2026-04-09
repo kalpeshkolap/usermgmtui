@@ -73,7 +73,7 @@ jobs:
       - name: AI Security Summary
         if: env.COUNT != '0'
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }
+          ANTHROPIC_API_KEY: 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
         run: |
           echo "Generating AI summary..."
 
